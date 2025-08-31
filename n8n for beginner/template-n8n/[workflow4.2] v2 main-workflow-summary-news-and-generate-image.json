@@ -1,0 +1,262 @@
+{
+  "name": "[workflow4.2] v2 main-workflow-summary-news-and-generate-image",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        512,
+        176
+      ],
+      "id": "1c55e2a9-ff56-4b7c-98c6-818ec6852372",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "mp8qvXLIlagaZjtz",
+          "mode": "list",
+          "cachedResultName": "[workflow4.1] v2 sub-work-flow-feed"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        176
+      ],
+      "id": "d6f2aae6-77a7-4c3d-a06a-63cfb72c8405",
+      "name": "Execute Workflow"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainSummarization",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        176
+      ],
+      "id": "0867e1ca-336c-4b85-a878-f919985e6397",
+      "name": "Summarization Chain"
+    },
+    {
+      "parameters": {
+        "maxItems": 3
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        928,
+        176
+      ],
+      "id": "aa87702c-fb2b-4bf4-873c-60543bd84f3e",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash-exp-image-generation",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash-exp-image-generation"
+        },
+        "prompt": "=give me a image for news topic\nrelate with news \n\nyou can create image like a cartoon style (jibi studio)\n\nTopic: {{ $json.output.text }}\n\npls give me resolution Full HD",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        176
+      ],
+      "id": "c7cde983-158a-476d-a1ef-4405a42691f5",
+      "name": "Generate an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ZU58qEqiybZ7LwqP",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        464
+      ],
+      "id": "7461fdbf-0c2d-4b26-90d8-631680e23228",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "3WHaSQ5BbyYWo5Zy",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## call sub workflow\nไปเรียก workflow ที่ดึงข่าวมา",
+        "height": 304
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        656,
+        64
+      ],
+      "typeVersion": 1,
+      "id": "ca376792-1cc0-4f71-8956-a75dc26fe19f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## limit 3 \nขอข่าวแรกๆ ไม่เอาเยอะ เดี๋ยวโมเดลพัง หรือ ใครจะไม่ใส่ก็ได้",
+        "height": 304,
+        "width": 192,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        896,
+        64
+      ],
+      "typeVersion": 1,
+      "id": "9888c96f-474c-49ef-b05b-69cd4d86c838",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## AI สรุปข่าว\nสรุปข่าวจาก ข่าว AI ที่มาจาก sub workflow",
+        "height": 304,
+        "width": 288,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1088,
+        64
+      ],
+      "typeVersion": 1,
+      "id": "4797b7fc-4299-403c-b487-4bb8e1614210",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## AI model\nเลือกโมเดลที่จะเอามาช่วยในการสรุปข่าว",
+        "height": 240,
+        "width": 336,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1040,
+        368
+      ],
+      "typeVersion": 1,
+      "id": "ded2c4df-cce5-48a1-91a4-41cb46da3b06",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## AI สร้างรูปภาพ\nเราจะเอาข่าวที่ถูกสรุปจาก ai มาแล้ว นำมาสร้างรูปภาพที่เกี่ยวข้องกับข่าวนั้นๆ",
+        "height": 304,
+        "width": 272,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1376,
+        64
+      ],
+      "typeVersion": 1,
+      "id": "c7d8529e-3225-465f-b25d-4b55e194943b",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarization Chain": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Summarization Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarization Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c6f44008-bb96-49f4-9b03-15f99841a36d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e3af11cfd2833e45587b7f367d1709b9ca7a5f3e9ebfd03ad3f95bfe1bfc2b91"
+  },
+  "id": "QSJm3lUhGlyGnrSn",
+  "tags": []
+}

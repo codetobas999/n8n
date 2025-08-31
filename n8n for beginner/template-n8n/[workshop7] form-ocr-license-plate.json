@@ -1,0 +1,425 @@
+{
+  "name": "[workshop7] form-ocr-license-plate",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "AI OCR",
+        "formDescription": "อ่านข้อมูลทุกอย่างไปเล้ยยยย",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "URL image",
+              "placeholder": "ใส่ url image อะไรก็ได้"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        288
+      ],
+      "id": "f16f1d16-4edf-43a0-8e3c-67ad04b95395",
+      "name": "On form submission",
+      "webhookId": "2a4fb731-48ec-4ecb-b0af-97d3deaa95b2"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json['URL image'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "8f6e1445-46a6-4295-97c0-4425c00aff33",
+      "name": "HTTP Request",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        512,
+        0
+      ],
+      "id": "5e0bc8f4-7ca6-46eb-a046-3465b77dcbb7",
+      "name": "Extract from File",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-goog-api-key"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"inline_data\": {\n            \"data\": \"{{ $json.data }}\",\n            \"mimeType\": \"image/jpeg\"\n          }\n        },\n        {\n          \"text\": \"You are an AI expert for scan text เกี่ยวกับป้ายทะเบียนประเทศไทย ตัวอย่าง กข1234 คุณต้องตอบออกมาเป็นเลขป้ายทะเบียนรถสิ\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        0
+      ],
+      "id": "e01eab02-20f7-4ec8-9c01-7951f93bf37e",
+      "name": "HTTP Request1",
+      "retryOnFail": true,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.candidates[0].content.parts[0].text }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "a0891107-f34c-4054-bfe9-9554d09d762a",
+      "name": "AI Agent",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"license_plate_number\": \"1กข2345\",\n\t\"license_plate_province\": \"กรุงเทพ\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1184,
+        304
+      ],
+      "id": "137b30ca-5f3b-4462-b8c6-531101b0cb31",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "text": "pls response me to OCR",
+        "imageUrls": "={{ $json['URL image'] }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        224,
+        288
+      ],
+      "id": "6d72e8d5-d43d-4843-8032-28d4208bb466",
+      "name": "Analyze image",
+      "credentials": {
+        "openAiApi": {
+          "id": "MsOIeD2vE6Hr7Ynb",
+          "name": "OpenAi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.content }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        288
+      ],
+      "id": "df71ebc9-1488-47ab-9e94-aff29d2194b9",
+      "name": "AI Agent1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash"
+        },
+        "text": "pls response OCR",
+        "imageUrls": "={{ $json['URL image'] }}",
+        "options": {
+          "maxOutputTokens": 300
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        224,
+        576
+      ],
+      "id": "21e535bc-d3e5-40eb-ae8a-67140f73abdb",
+      "name": "Analyze image1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "3WHaSQ5BbyYWo5Zy",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.content.parts[0].text }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        576
+      ],
+      "id": "c972bb53-2304-4949-b92f-807c387e970b",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        304
+      ],
+      "id": "65085211-642c-4b43-ab80-e90fb0c763f9",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "3WHaSQ5BbyYWo5Zy",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Version setup เอง (bad practice)",
+        "height": 272,
+        "width": 1152
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        192,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "a55443c6-b67a-4e54-aea0-6ee2b8e6db5a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Version ใช้ openai (good practice but not free)",
+        "height": 320,
+        "width": 624,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        192,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "c0d3139d-413b-45c3-8c51-7cc94026152b",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Version ใช้ gemini (best practice api free)\n",
+        "height": 288,
+        "width": 624,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        192,
+        496
+      ],
+      "typeVersion": 1,
+      "id": "f3bc410a-c0dc-4bad-a68c-27d13541e1da",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Model free & structure output",
+        "height": 320,
+        "width": 528,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        816,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "75239c3f-9648-4601-aff6-642241d8aed1",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Analyze image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          },
+          {
+            "node": "AI Agent2",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "164aa51c-b7c4-4c05-ac0b-d76b2554aed8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e3af11cfd2833e45587b7f367d1709b9ca7a5f3e9ebfd03ad3f95bfe1bfc2b91"
+  },
+  "id": "8KvFkOMh1TJZE9Po",
+  "tags": []
+}

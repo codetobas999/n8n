@@ -1,0 +1,781 @@
+{
+  "name": "My workflow 5",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ecbc862f-3933-4710-9b94-c2ed0ca6ec24",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1wpU6Q_rjAOnpJowrhscPyVNGOTNJgKp6IauSdiqMr7E",
+          "mode": "list",
+          "cachedResultName": "data-customer-itgenius",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wpU6Q_rjAOnpJowrhscPyVNGOTNJgKp6IauSdiqMr7E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wpU6Q_rjAOnpJowrhscPyVNGOTNJgKp6IauSdiqMr7E/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status_mail",
+              "lookupValue": "no"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        208,
+        0
+      ],
+      "id": "fe5712a4-23ee-43e2-8f5c-15a2e6c33671",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SFEKlSFmpmfmb4RM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "de266dba-e59f-42f8-bb62-c579f3eb63e3",
+              "name": "customer_id",
+              "value": "={{ $json.customer_id }}",
+              "type": "string"
+            },
+            {
+              "id": "dfe45eee-68cd-4f5a-9842-fa3175d6258b",
+              "name": "full_name",
+              "value": "={{ $json.full_name }}",
+              "type": "string"
+            },
+            {
+              "id": "6fad0ed6-98a2-4a5a-a87c-724b3f8ddea7",
+              "name": "email2",
+              "value": "={{ $json.email2 }}",
+              "type": "string"
+            },
+            {
+              "id": "6f2860e3-4351-4ca3-bd12-f598e14c87d7",
+              "name": "phone",
+              "value": "={{ $json.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "a62c9f0d-073b-45f8-8a2a-e837bfac4880",
+              "name": "status_mail",
+              "value": "={{ $json.status_mail }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "833ffb2c-7bc3-4c7b-a45c-5e300d17b6ef",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email2 }}",
+        "subject": "Alert report n8n",
+        "emailType": "text",
+        "message": "=สวัสดีครับคุณ {{ $json.full_name }}\n\nEmail ของคุณคือ : {{ $json.email2 }}\n\nเบอร์โทรศัพย์ของคุณคิอ : {{ $json.phone }}\n\nคุณได้ลุ้นรับทองคำ 50,000 บาท",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        768,
+        0
+      ],
+      "id": "2972908a-2073-4f1e-a6ef-937ab5567b29",
+      "name": "Send a message",
+      "webhookId": "555236a2-352c-4c3d-aa55-1d15aacf3207",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1n1kMMkdCDaADcA6",
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "aiparuay.work@gmail.com",
+        "subject": "Mistake something email",
+        "emailType": "text",
+        "message": "=เกิดข้อผิดพลาดการส่งเมลไปหา\n\nคุณ {{ $json.full_name }}\n\nGmail: {{ $json.email2 }}\n\nTel: {{ $json.phone }}\n\nError exception\n{{ $json.error }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        976,
+        96
+      ],
+      "id": "0bbdf173-5d27-44fc-9c89-b98544502a30",
+      "name": "Send a message1",
+      "webhookId": "5c9ba589-e257-4314-a488-60265e9634d0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1n1kMMkdCDaADcA6",
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d5f634f6-72cd-4204-815e-df2ab30b4f84",
+              "leftValue": "={{ $json.email2 }}",
+              "rightValue": "@",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        752,
+        336
+      ],
+      "id": "51c04136-1e3c-4b17-b760-90438dabd347",
+      "name": "If",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email2 }}",
+        "subject": "Alert report n8n",
+        "emailType": "text",
+        "message": "=สวัสดีครับคุณ {{ $json.full_name }}\n\nEmail ของคุณคือ : {{ $json.email2 }}\n\nเบอร์โทรศัพย์ของคุณคิอ : {{ $json.phone }}\n\nคุณได้ลุ้นรับทองคำ 50,000 บาท",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1024,
+        320
+      ],
+      "id": "ae91eb8d-39a6-4daf-b2c2-bfa54f98d1aa",
+      "name": "Send a message2",
+      "webhookId": "555236a2-352c-4c3d-aa55-1d15aacf3207",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1n1kMMkdCDaADcA6",
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1wpU6Q_rjAOnpJowrhscPyVNGOTNJgKp6IauSdiqMr7E",
+          "mode": "list",
+          "cachedResultName": "data-customer-itgenius",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wpU6Q_rjAOnpJowrhscPyVNGOTNJgKp6IauSdiqMr7E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wpU6Q_rjAOnpJowrhscPyVNGOTNJgKp6IauSdiqMr7E/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "customer_id": "={{ $('If').item.json.customer_id }}",
+            "status_mail": "yes"
+          },
+          "matchingColumns": [
+            "customer_id"
+          ],
+          "schema": [
+            {
+              "id": "customer_id",
+              "displayName": "customer_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "full_name",
+              "displayName": "full_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email2",
+              "displayName": "email2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status_mail",
+              "displayName": "status_mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_updated",
+              "displayName": "last_updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1248,
+        320
+      ],
+      "id": "342f3fb2-444f-4035-9ea4-05e18a568ed4",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SFEKlSFmpmfmb4RM",
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d5f634f6-72cd-4204-815e-df2ab30b4f84",
+              "leftValue": "={{ $json.email2 }}",
+              "rightValue": "@",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        752,
+        592
+      ],
+      "id": "6681bb65-1cf4-4123-93c9-aaa9fb1dd1bf",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1040,
+        576
+      ],
+      "id": "5149ad41-bbe9-4951-bf24-3dbfc7d446bc",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email2 }}",
+        "subject": "ลุ้นรับรางวัล ชิงโชค",
+        "emailType": "text",
+        "message": "ทดสอบ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1344,
+        672
+      ],
+      "id": "225360de-2891-4402-9b89-f7919f79e45f",
+      "name": "Send a message4",
+      "webhookId": "fdfd2f76-95f1-4ae3-bd80-ecfd597858cd",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1n1kMMkdCDaADcA6",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1wpU6Q_rjAOnpJowrhscPyVNGOTNJgKp6IauSdiqMr7E",
+          "mode": "list",
+          "cachedResultName": "data-customer-itgenius",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wpU6Q_rjAOnpJowrhscPyVNGOTNJgKp6IauSdiqMr7E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wpU6Q_rjAOnpJowrhscPyVNGOTNJgKp6IauSdiqMr7E/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "customer_id": "={{ $('If1').item.json.customer_id }}",
+            "status_mail": "yes"
+          },
+          "matchingColumns": [
+            "customer_id"
+          ],
+          "schema": [
+            {
+              "id": "customer_id",
+              "displayName": "customer_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "full_name",
+              "displayName": "full_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email2",
+              "displayName": "email2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status_mail",
+              "displayName": "status_mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_updated",
+              "displayName": "last_updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1568,
+        768
+      ],
+      "id": "27e46b47-beed-4d74-aaef-fa7705099434",
+      "name": "Update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SFEKlSFmpmfmb4RM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1.5
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1776,
+        800
+      ],
+      "id": "b87bfabd-4852-4241-87bb-e32a2177d852",
+      "name": "Wait",
+      "webhookId": "1b86eb48-760e-4634-a2de-f677171cce01"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        208
+      ],
+      "id": "7ceb6b5f-5736-4f18-80b8-55aceccf7e50",
+      "name": "Schedule Trigger",
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message2": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send a message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message4": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3db70a2b-652c-42f8-a709-b9236756db53",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e3af11cfd2833e45587b7f367d1709b9ca7a5f3e9ebfd03ad3f95bfe1bfc2b91"
+  },
+  "id": "qUrvczDw746bdi4w",
+  "tags": []
+}

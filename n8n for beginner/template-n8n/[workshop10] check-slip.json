@@ -1,0 +1,359 @@
+{
+  "name": "[workshop10] check-slip",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Read slip",
+        "formDescription": "อ่านสลิป",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "data",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -208,
+        0
+      ],
+      "id": "e636ab2d-12cb-45ef-b897-65865e3f59d0",
+      "name": "On form submission",
+      "webhookId": "7245d28b-41e4-48f5-a5a6-18e32520efc1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Check slip with form submission\neasyslip api",
+        "height": 512,
+        "width": 1008
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -304,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "f2d674f0-517e-49b5-9cdc-5105cf88f8ca",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Check slip with Line\neasyslip api {credential}",
+        "height": 512,
+        "width": 1008,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -304,
+        416
+      ],
+      "typeVersion": 1,
+      "id": "c5ea08b0-666b-45c5-8592-3c9cf434aa33",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "6ced8614-a1c8-4d07-a07d-0add38aca75c",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -208,
+        528
+      ],
+      "id": "e3fc0368-0932-4cd2-8a99-e75314dabab4",
+      "name": "Webhook",
+      "webhookId": "6ced8614-a1c8-4d07-a07d-0add38aca75c"
+    },
+    {
+      "parameters": {
+        "url": "=https://api-data.line.me/v2/bot/message/{{ $json.body.events[0].message.id }}/content",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        112,
+        528
+      ],
+      "id": "6f04f1e2-7469-4b45-96d0-740dfc7e0a23",
+      "name": "line-img-2-binary",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "E0EV9VKdyCQxeEBR",
+          "name": "[LINE] HR-AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://developer.easyslip.com/api/v1/verify",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {api-key}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image",
+              "value": "={{ $json.data }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -64,
+        768
+      ],
+      "id": "5a01b40f-9baa-4f21-8921-c89f71588e6f",
+      "name": "easy-slip-read"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        416,
+        528
+      ],
+      "id": "2605f614-5436-4797-9745-c319bcc66025",
+      "name": "binary-2-base64"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"replyToken\": \"{{ $('Webhook').item.json.body.events[0].replyToken }}\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"คนโอนคือ {{ $json.data.sender.account.name.th }} จากธนาคาร {{ $json.data.sender.bank.name }} โอนไปให้ {{ $json.data.receiver.account.name.th }}\"\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        768
+      ],
+      "id": "3c96f742-f0d8-4164-b6ea-a282ea624ad5",
+      "name": "send-data-2-line",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "E0EV9VKdyCQxeEBR",
+          "name": "[LINE] HR-AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## รอบนี้ Credential advance  Line ขึ้นมานิด\nใช้เป็น Header Auth ป้องกัน key พวก Bearer หลุด โดยจะเก็บเป็น credential ของ n8n ไปเลย",
+        "height": 512,
+        "width": 272,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        704,
+        416
+      ],
+      "typeVersion": 1,
+      "id": "90448d5c-547e-4383-bf64-cd4694f56c55",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        96,
+        224
+      ],
+      "id": "4277b153-05ae-46cf-9088-d05b0b4def6a",
+      "name": "AI-analys-slip",
+      "credentials": {
+        "openAiApi": {
+          "id": "MsOIeD2vE6Hr7Ynb",
+          "name": "OpenAi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://developer.easyslip.com/api/v1/verify",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {api-key}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image",
+              "value": "={{ $json.data }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "8ab86a22-bcdf-4825-ac8f-e44c51e0f1fd",
+      "name": "easy-slip-",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        96,
+        0
+      ],
+      "id": "f3a67e31-c465-4779-a98d-b68b1bc76cf8",
+      "name": "binary-2-base64-2",
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "binary-2-base64-2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI-analys-slip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "line-img-2-binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "line-img-2-binary": {
+      "main": [
+        [
+          {
+            "node": "binary-2-base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "easy-slip-read": {
+      "main": [
+        [
+          {
+            "node": "send-data-2-line",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "binary-2-base64": {
+      "main": [
+        [
+          {
+            "node": "easy-slip-read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "binary-2-base64-2": {
+      "main": [
+        [
+          {
+            "node": "easy-slip-",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a9dbd2f0-ef27-4b6e-8171-72055dbf3a5b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e3af11cfd2833e45587b7f367d1709b9ca7a5f3e9ebfd03ad3f95bfe1bfc2b91"
+  },
+  "id": "z8ABBdIjmoj9GAzC",
+  "tags": []
+}

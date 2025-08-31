@@ -1,0 +1,212 @@
+{
+  "name": "[workshop5] slack-ai-chat-bot",
+  "nodes": [
+    {
+      "parameters": {
+        "trigger": [
+          "app_mention"
+        ],
+        "channelId": {
+          "__rl": true,
+          "value": "C099LR5Q69M",
+          "mode": "list",
+          "cachedResultName": "chatbot"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slackTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "049b54ff-f9b3-4a89-8750-c074ae5cb574",
+      "name": "Slack Trigger",
+      "webhookId": "b98a830e-fa7f-49f1-bc11-1fc8db9c758c",
+      "credentials": {
+        "slackApi": {
+          "id": "6RSAhafhX05ZXpSK",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.blocks[0].elements[0].elements[1].text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "597e737a-1b4f-4f39-baa1-37d3080404a4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        352
+      ],
+      "id": "3d8eee3f-ba2c-4d93-8b56-6e9282558c84",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "MsOIeD2vE6Hr7Ynb",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C099LR5Q69M",
+          "mode": "list",
+          "cachedResultName": "chatbot"
+        },
+        "text": "={{ $json.output }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        576,
+        0
+      ],
+      "id": "44e581c9-be0d-40e6-9c42-7802b291a849",
+      "name": "Send a message",
+      "webhookId": "c847622a-7654-4b0c-b0a1-13a9afd671cb",
+      "credentials": {
+        "slackApi": {
+          "id": "6RSAhafhX05ZXpSK",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Slack trigger \nเวลาที่มีคนเรียก bot ใน slack node นี้จะทำการเรียกตัวเอง",
+        "height": 272
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -64,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "f9941314-f353-46e1-b384-695d64d08724",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## AI agent node\nรับข้อความจาก slack มาแล้วเอามาประมวลผลด้วย ai ที่ node นี้",
+        "height": 272,
+        "width": 320,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        176,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "2cf06c19-77c2-4f38-9e6d-c32a9b3dcbbf",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## model ของ ai agent\nเราจะเลิอก model อะไรก็ได้ที่เราชอบ กับบริบทในการตอบคำถามได้เลย",
+        "height": 320,
+        "width": 208,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        160
+      ],
+      "typeVersion": 1,
+      "id": "1a44a7f2-5566-4771-b247-4777d6f37f19",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## ตอบกลับที่ slack \nเราจะให้คำตอบของ node ai ตอบกลับไปที่ slack ช่องแชทนั้น",
+        "height": 272,
+        "width": 320,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        496,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "0375fac1-2864-4aa8-8c2c-8520af77e056",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Slack Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2a999b9b-bb0f-4877-b3cc-86b672b9caf4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e3af11cfd2833e45587b7f367d1709b9ca7a5f3e9ebfd03ad3f95bfe1bfc2b91"
+  },
+  "id": "mQmMXAqTLp9sgvjD",
+  "tags": []
+}

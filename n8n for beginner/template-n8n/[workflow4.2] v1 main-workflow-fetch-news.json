@@ -1,0 +1,82 @@
+{
+  "name": "[workflow4.2] v1 main-workflow-fetch-news",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6f4f6463-597d-4662-bf2d-ad49fb886ee9",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "a4Hcy0vTh5UOVIgo",
+          "mode": "list",
+          "cachedResultName": "[workflow4.1] v1 sub-work-flow-feed"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "3d8d9c91-258e-4913-a3d9-4cb6c13c5e3f",
+      "name": "fetch ai news"
+    },
+    {
+      "parameters": {
+        "content": "## call sub workflow\nเรียก sub workflow ที่เอาไว้ดึงข่าว",
+        "height": 320,
+        "width": 272
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        128,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "b8da122c-ead4-40c3-b4c5-a63f16bc1cb2",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "fetch ai news",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "376fc33a-161f-4946-aee0-f8b1572672ff",
+  "meta": {
+    "instanceId": "e3af11cfd2833e45587b7f367d1709b9ca7a5f3e9ebfd03ad3f95bfe1bfc2b91"
+  },
+  "id": "jnxK88EOA6CtVa3d",
+  "tags": []
+}

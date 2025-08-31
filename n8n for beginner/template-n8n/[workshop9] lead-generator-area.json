@@ -1,0 +1,378 @@
+{
+  "name": "[workshop9] lead-generator-area",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -96
+      ],
+      "id": "999741e6-607a-46cb-b357-8880fb373901",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "title",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "=title,categoryName,hotelStars,phone,website,totalScore,reviewsCount,price,address,url",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -96
+      ],
+      "id": "77497a6f-0b98-47ad-8777-2b4509b9c66d",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        576,
+        -96
+      ],
+      "id": "5c700ce1-3293-4f46-9a2f-b2a465cdd10f",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1152,
+        64
+      ],
+      "id": "4abb8cc2-5fd8-41db-b559-11e30b0454eb",
+      "name": "Wait",
+      "webhookId": "96d5c572-b187-4ce2-930c-b4be1c1657c2"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1tmoZFjCq3iNlcG0-CIwcaqoB0EieavmDAaau0FFY-eI",
+          "mode": "list",
+          "cachedResultName": "collect-lead-itgenius",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tmoZFjCq3iNlcG0-CIwcaqoB0EieavmDAaau0FFY-eI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1CWteZgIbp8VClTIVrOn1-bjgqCwNgaFqBHbLTMfLg5U/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "title": "={{ $json.title }}",
+            "categoryName": "={{ $json.categoryName }}",
+            "starts": "={{ $json.hotelStars }}",
+            "phone": "='{{ $json.phone }}",
+            "website": "={{ $json.website }}",
+            "totalScore": "={{ $json.totalScore }}",
+            "reviewsCount": "={{ $json.reviewsCount }}",
+            "price": "={{ $json.price }}",
+            "address": "={{ $json.address }}",
+            "url": "={{ $json.url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "categoryName",
+              "displayName": "categoryName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "starts",
+              "displayName": "starts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "website",
+              "displayName": "website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "totalScore",
+              "displayName": "totalScore",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "reviewsCount",
+              "displayName": "reviewsCount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "price",
+              "displayName": "price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "address",
+              "displayName": "address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        832,
+        64
+      ],
+      "id": "06970182-59df-4084-8a7d-de2a82c198b6",
+      "name": "Append row in sheet",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SFEKlSFmpmfmb4RM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## APIFY ข้อมูล lead\ngoogle web scraper\nดึงข้อมูลลูกค้าจากแผนที่ google map [apify](https://console.apify.com/actors/nwua9Gu5YrADL7ZDj/input)\nอย่าลืมใส่ api นะ",
+        "height": 352,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        16,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "fab8d602-1b1f-4c5f-9347-ba9b716b3ad7",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## วน loop\nเอาแต่ละ item ค่อยๆวนไปเก็บใน google sheet กันติด rate limit ของ google",
+        "height": 352,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        496,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "8e36813c-ac3a-42fd-8a20-4274b75d9cac",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## บันทึกข้อมูล Google sheet\nเรานำข้อมูล lead จาก apify มาเก็บไว้ใน google sheet เรื่อยๆ\n\nสามารถ map แต่ละ column เองได้เลย",
+        "height": 480,
+        "width": 304,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        736,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "b399a4c9-d41a-4d6f-aa74-17f6e5d12368",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Wait node\ndelay รอ กันทำงานไวเกินไปจะไปติด rate limit google sheet",
+        "height": 288,
+        "width": 304,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1040,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "3b1ac687-edb4-4e23-9ed9-3c54f24cf88b",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## split out\nดึงข้อมูล column ที่สนใจออกมาอีกรอบ (จะได้ set ก็ได้)",
+        "height": 352,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        256,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "09d2b30f-730c-4a63-9687-95b245bdd718",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n    \"includeWebResults\": false,\n    \"language\": \"th\",\n    \"locationQuery\": \"ลาดพร้าว , กรุงเทพ , ประเทศไทย\",\n    \"maxCrawledPlacesPerSearch\": 10,\n    \"maxImages\": 0,\n    \"maximumLeadsEnrichmentRecords\": 0,\n    \"reviewsSort\": \"mostRelevant\",\n    \"scrapeContacts\": false,\n    \"scrapeDirectories\": false,\n    \"scrapeImageAuthors\": false,\n    \"scrapePlaceDetailPage\": false,\n    \"scrapeReviewsPersonalData\": true,\n    \"scrapeTableReservationProvider\": false,\n    \"searchStringsArray\": [\n        \"ร้านนวด\"\n    ],\n    \"skipClosedPlaces\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        80,
+        -96
+      ],
+      "id": "de7badb0-116c-4408-a567-12547ec7610a",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "beb93914-d1c2-4efd-9e83-92ca59380f68",
+  "meta": {
+    "instanceId": "e3af11cfd2833e45587b7f367d1709b9ca7a5f3e9ebfd03ad3f95bfe1bfc2b91"
+  },
+  "id": "jeNoZeL49vV8EEVZ",
+  "tags": []
+}

@@ -1,0 +1,298 @@
+{
+  "name": "[workshop6] line-ai-chat-bot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cc5c6f59-cd00-4795-85de-1953ebd47597",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9f5019e8-6226-482d-afef-38c6c0d70108",
+      "name": "Webhook",
+      "webhookId": "cc5c6f59-cd00-4795-85de-1953ebd47597"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.events[0].message.text }}",
+        "options": {
+          "systemMessage": "You are a helpful assistant\nif user ask about customer data\nyou should open on\ngoogle sheet Tools: customer data"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "6840f722-9a62-44e6-9c3d-5705600d5daf",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        112,
+        320
+      ],
+      "id": "12df8648-62f3-483d-b0f5-6ebf9f26d00a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "MsOIeD2vE6Hr7Ynb",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {chanel access token}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"replyToken\": {{ $('Webhook').item.json.body.events[0].replyToken.toJsonString() }},\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": {{ $json.output.toJsonString() }}\n    }\n  ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "7953a258-c9af-48a3-bfbf-0666587e169a",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1wpU6Q_rjAOnpJowrhscPyVNGOTNJgKp6IauSdiqMr7E",
+          "mode": "list",
+          "cachedResultName": "data-customer-itgenius",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wpU6Q_rjAOnpJowrhscPyVNGOTNJgKp6IauSdiqMr7E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wpU6Q_rjAOnpJowrhscPyVNGOTNJgKp6IauSdiqMr7E/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        544,
+        320
+      ],
+      "id": "adb1ce91-6f53-4796-90b6-19777cf13fe3",
+      "name": "customer data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SFEKlSFmpmfmb4RM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.events[0].source.userId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        336,
+        320
+      ],
+      "id": "7e619c45-bea9-48e2-a5ac-b1b9608d98fd",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "content": "## webhook node\nทำการรับข้อมูลจาก line มา",
+        "height": 272
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -64,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "6d38bf55-1a54-4c25-9676-1b253ad681a9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## AI agent node\nรับข้อความจาก line มาแล้วเอามาประมวลผลด้วย ai ที่ node นี้",
+        "height": 272,
+        "width": 320,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        176,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "ec5dc973-727f-4773-8a29-f6a360179f1a",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## ตอบกลับที่ line\nเราจะให้คำตอบของ node ai ตอบกลับไปที่ slack ช่องแชทนั้น",
+        "height": 272,
+        "width": 256,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        496,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "60d2c5b0-2a64-4e97-8649-491f4140967d",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## model ของ ai agent\nเราจะเลิอก model อะไรก็ได้ที่เราชอบ กับบริบทในการตอบคำถามได้เลย",
+        "height": 288,
+        "width": 272,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        160
+      ],
+      "typeVersion": 1,
+      "id": "ff113a7c-d479-4dbc-b887-908fa76774e5",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Simple Memory\nทำให้ ai ของเรามีความทรงจำก่อนหน้าได้",
+        "height": 288,
+        "width": 208,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        272,
+        160
+      ],
+      "typeVersion": 1,
+      "id": "576f7498-7ae3-4217-ab9e-e7f8bf7c15ea",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Google sheet data\nข้อมูลลูกค้า เพื่อทำ mini rag",
+        "height": 288,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        160
+      ],
+      "typeVersion": 1,
+      "id": "caecf784-5777-45f0-bdd6-810fe2416afb",
+      "name": "Sticky Note5"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "customer data": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "23ddc015-fe83-43a8-b29b-44ecfab436fb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e3af11cfd2833e45587b7f367d1709b9ca7a5f3e9ebfd03ad3f95bfe1bfc2b91"
+  },
+  "id": "2vcMe2E5i4EMXTQ0",
+  "tags": []
+}

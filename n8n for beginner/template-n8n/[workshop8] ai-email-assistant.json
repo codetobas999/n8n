@@ -1,0 +1,616 @@
+{
+  "name": "[workshop8] ai-email-assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Please analyze the following customer email content.\n\nCustomer Email Subject: {{ $json.Subject }}\nCustomer Email Body:\n\"\"\"\n{{ $json.snippet }}\n\"\"\"",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=ให้คุณสรุปข้อมูลออกมาเป็นแบบนี้\n\nsuggested_response_template_id\n1 คือ คำถามเกี่ยวกับข้อมูลสินค้าและบริการ\n2 คือ คำถามเกี่ยวกับสถานที่ติดต่อ\n3 คือ คำถามเกี่ยวกับเบอร์โทร\n\n{\n  \"suggested_response_template_id\": 1,\n  \"language\": \"TH\",\n  \"confidence_score\": 0.95,\n  \"summary_for_human\": \"Customer is asking for the price of the starting package.\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        272,
+        416
+      ],
+      "id": "084330e3-5526-422f-b425-473ad2fc1f78",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        192,
+        704
+      ],
+      "id": "e8cda9d2-0894-4249-a263-93b154f7893d",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "g7zWbc1OHWW5StEZ",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Gmail Trigger').item.json.From }}",
+        "subject": "IT genius",
+        "message": "={{ $('Get row(s) in sheet').item.json.answer }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1504,
+        240
+      ],
+      "id": "9ef728df-135b-462d-9fac-ffc4ee681872",
+      "name": "Send a message1",
+      "webhookId": "8dad49a9-c5dc-439c-b725-9b52675751a4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1n1kMMkdCDaADcA6",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"suggested_response_template_id\": 1,\n  \"language\": \"TH\",\n  \"confidence_score\": 0.95,\n  \"summary_for_human\": \"Customer is asking for the price of the starting package.\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        496,
+        704
+      ],
+      "id": "e419aded-9c91-42e4-ac2e-e476c1c28cf2",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.no }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "a6c64758-9e81-4400-9f38-08cab91c0005"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "product"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "76f39cac-5e57-479e-8275-07b248195f88",
+                    "leftValue": "={{ $json.no }}",
+                    "rightValue": 2,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "area"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1e69b136-7f3b-444b-882e-026657098f14",
+                    "leftValue": "={{ $json.no }}",
+                    "rightValue": 3,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "tel"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        912,
+        400
+      ],
+      "id": "cc383523-ac6f-474b-a7be-3364684d20ec",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "thread",
+        "operation": "addLabels",
+        "threadId": "={{ $('Gmail Trigger').item.json.threadId }}",
+        "labelIds": [
+          "Label_7802417222519072565"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        256
+      ],
+      "id": "4ff194cf-3644-4c18-9379-036937c7cd93",
+      "name": "Label1",
+      "webhookId": "b909ecfa-351f-4620-92cd-8ceb4b42b251",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1n1kMMkdCDaADcA6",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "thread",
+        "operation": "addLabels",
+        "threadId": "={{ $('Gmail Trigger').item.json.threadId }}",
+        "labelIds": [
+          "Label_7077540137785025583"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        416
+      ],
+      "id": "fbb86e51-fa67-4885-8eb8-2cd09da238cb",
+      "name": "Label",
+      "webhookId": "b909ecfa-351f-4620-92cd-8ceb4b42b251",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1n1kMMkdCDaADcA6",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "thread",
+        "operation": "addLabels",
+        "threadId": "={{ $('Gmail Trigger').item.json.threadId }}",
+        "labelIds": [
+          "Label_1137466945553890682"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        576
+      ],
+      "id": "95dbdc5b-d508-4449-be23-565a4e1933b5",
+      "name": "Label2",
+      "webhookId": "b909ecfa-351f-4620-92cd-8ceb4b42b251",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1n1kMMkdCDaADcA6",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1RW326uEdcNq2DvIZQNrDOaEyzgDmrPINrr3whVYdW2Y",
+          "mode": "list",
+          "cachedResultName": "ai-email-dialog-itgenius",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1RW326uEdcNq2DvIZQNrDOaEyzgDmrPINrr3whVYdW2Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "info",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1RW326uEdcNq2DvIZQNrDOaEyzgDmrPINrr3whVYdW2Y/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "no",
+              "lookupValue": "={{ $json.output.suggested_response_template_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        416
+      ],
+      "id": "583fe51b-4898-46d4-9602-71248e71146d",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SFEKlSFmpmfmb4RM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Gmail Trigger').item.json.From }}",
+        "subject": "IT genius",
+        "emailType": "text",
+        "message": "={{ $('Get row(s) in sheet').item.json.answer }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1504,
+        416
+      ],
+      "id": "93822584-f012-4e00-b81e-12427eba1c00",
+      "name": "Send a message2",
+      "webhookId": "8dad49a9-c5dc-439c-b725-9b52675751a4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1n1kMMkdCDaADcA6",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Gmail Trigger').item.json.From }}",
+        "subject": "IT genius",
+        "emailType": "text",
+        "message": "={{ $('Get row(s) in sheet').item.json.answer }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1504,
+        592
+      ],
+      "id": "abd5c5b6-ea1c-4169-8e31-b6355def3000",
+      "name": "Send a message3",
+      "webhookId": "8dad49a9-c5dc-439c-b725-9b52675751a4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1n1kMMkdCDaADcA6",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        32,
+        416
+      ],
+      "id": "041a20a3-dc1d-46d0-ba1a-4951a953dc75",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1n1kMMkdCDaADcA6",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Gmail trigger\nรับข้อเมลมาจาก inbox ของเมลเรา",
+        "height": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -48,
+        256
+      ],
+      "typeVersion": 1,
+      "id": "51e4f1e4-74a7-43fd-b1b5-9c1a1775b031",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## AI agent node\nนำเข้ามูลจาก email ที่ส่งมา นำมาประมวลผล ว่าลูกค้าถามอะไรมา",
+        "height": 336,
+        "width": 400,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        192,
+        256
+      ],
+      "typeVersion": 1,
+      "id": "f106bd5b-8b72-4629-a8f2-9246b94eeb94",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Gemini model\nmodel node ชอบโมเดลอะไรในการตอบกลับก็ปรับตรงนี้ได้เลย",
+        "height": 256,
+        "width": 304,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        80,
+        592
+      ],
+      "typeVersion": 1,
+      "id": "683b3b11-67f8-4863-a054-f751dcb24ba8",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Output parser\nparser node บังคับ format ออกไปตอบ",
+        "height": 256,
+        "width": 304,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        384,
+        592
+      ],
+      "typeVersion": 1,
+      "id": "16bcf74f-8bd0-4770-84ba-87c44a5cac5c",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Google sheet data\nเราเอาตัวเลข ไปหา เพื่อนำคำตอบออกมา ตอบเมลลูกค้า [ตัวอย่างข้อมูล](https://docs.google.com/spreadsheets/d/1RW326uEdcNq2DvIZQNrDOaEyzgDmrPINrr3whVYdW2Y/edit?usp=sharing)",
+        "height": 336,
+        "width": 256,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        592,
+        256
+      ],
+      "typeVersion": 1,
+      "id": "87a8e749-30e3-4403-a597-ec0ebac7af13",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Switch case\nเป็นเงื่อนไขว่าเราจะติด label อะไรให้เขา และ ตอบกลับไปหหายังไง หรือ ส่งต่อทีม",
+        "height": 336,
+        "width": 224,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        848,
+        256
+      ],
+      "typeVersion": 1,
+      "id": "130f635c-4b4e-4088-9ce9-fe738fbbf913",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Group label mail node\nเราจะติด tag ว่าอันนี้สำคัญไหม หรือ จะ follow ยังไงต่อ",
+        "height": 640,
+        "width": 336,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1072,
+        128
+      ],
+      "typeVersion": 1,
+      "id": "c357ec8a-ac85-421e-8709-31c29a9912fa",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## Group send mail node\nเราเลือกได้ว่าเราจะส่งหาลูกค้าเลย หรือ CC หาทีมก่อนก็สามารถมาปรับแต่งตรงนี้ได้",
+        "height": 640,
+        "width": 336,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1408,
+        128
+      ],
+      "typeVersion": 1,
+      "id": "ee960072-1566-48e2-8e59-e9eaf68b621e",
+      "name": "Sticky Note7"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Label1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Label",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Label2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Label1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Label": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Label2": {
+      "main": [
+        [
+          {
+            "node": "Send a message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "32ad2d8e-3924-46e2-9f2f-94ab74c7f193",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e3af11cfd2833e45587b7f367d1709b9ca7a5f3e9ebfd03ad3f95bfe1bfc2b91"
+  },
+  "id": "kERAS9hNErpmKdbK",
+  "tags": []
+}

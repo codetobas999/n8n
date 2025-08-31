@@ -1,0 +1,349 @@
+{
+  "name": "[workflow4.1] v1 subworkflow-feed-ai-news",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "958f4f93-2808-41bc-b6d7-7c2d0c64bc54",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "df13949f-a2a9-4f2c-87cd-cf9cb4427ad4",
+              "name": "url",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            },
+            {
+              "id": "c4ef01c9-76a2-4bfe-8137-23bb252d8780",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "65655bf4-6418-42df-baa6-2aa94db48c5e",
+              "name": "content_text",
+              "value": "={{ $json.content_text }}",
+              "type": "string"
+            },
+            {
+              "id": "6ccb4b1c-4814-4d00-992f-a1076e5bbbc7",
+              "name": "image",
+              "value": "={{ $json.image }}",
+              "type": "string"
+            },
+            {
+              "id": "8ac5b1c2-a9ec-4537-87ca-a51d0e64e142",
+              "name": "date_published",
+              "value": "={{ $json.date_published }}",
+              "type": "string"
+            },
+            {
+              "id": "9729baac-b38c-4da5-91ba-8fb9b554ddbc",
+              "name": "authors[0].name",
+              "value": "={{ $json.authors[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "ffa5b31c-038d-4995-9a11-1a746f776bbc",
+              "name": "attachments[0].url",
+              "value": "={{ $json.attachments[0].url }}",
+              "type": "string"
+            },
+            {
+              "id": "9e44bad0-059a-4c66-86bf-454819923bc3",
+              "name": "feedSource",
+              "value": "={{ $json.feedSource }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        848,
+        224
+      ],
+      "id": "e25de7fb-5ffc-4ea1-8d65-9112eebbfd99",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        464,
+        208
+      ],
+      "id": "fc97e49c-ed29-47b4-99b2-0daaaa3102c6",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "url": "https://rss.app/feeds/v1.1/xNVg2hbY14Z7Gpva.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "55f089c5-4dc2-4bdc-ac41-17dd93466b39",
+      "name": "OPENAI NEWS"
+    },
+    {
+      "parameters": {
+        "url": "https://rss.app/feeds/v1.1/AkOariu1C7YyUUMv.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        208
+      ],
+      "id": "da0975d0-a37f-4bb5-ad31-8811f31912a6",
+      "name": "GOOGLE NEW (AI)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// สร้าง array ว่างเพื่อเก็บ 'items' ทั้งหมด\nconst allItems = [];\n\n// วนลูปข้อมูลที่เข้ามาทั้งหมด\nfor (const feed of $input.all()) {\n  // ดึงชื่อฟีดจาก title\n  const feedTitle = feed.json.title;\n\n  // ตรวจว่ามี items อยู่ใน feed หรือไม่ และต้องเป็น array\n  if (Array.isArray(feed.json.items)) {\n    for (const article of feed.json.items) {\n      // สร้าง object ใหม่ตามโครงสร้างที่ n8n ต้องการ\n      allItems.push({\n        json: {\n          ...article,                // คัดลอกข้อมูลเดิมใน article\n          feedSource: feedTitle,     // เพิ่มชื่อฟีดที่มา\n        }\n      });\n    }\n  }\n}\n\n// ส่งคืนรายการทั้งหมดที่ถูกดึงมาและเพิ่มข้อมูลแล้ว\nreturn allItems;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        224
+      ],
+      "id": "62b38082-aff7-4de9-b85f-0a6118acf905",
+      "name": "clean"
+    },
+    {
+      "parameters": {
+        "url": "https://www.blognone.com/node/feed",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        416
+      ],
+      "id": "5f283e36-e4dc-4fb9-8b28-d6d28cabb868",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "jsCode": "const cleanedItems = [];\n\nfor (const item of $input.all()) {\n  const {\n    title,\n    link: url,\n    pubDate,\n    contentSnippet,\n    creator,\n    isoDate,\n  } = item.json;\n\n  cleanedItems.push({\n    version: \"https://jsonfeed.org/version/1.1\",\n    title: \"Blognone (Clean)\",\n    home_page_url: \"https://www.blognone.com/\",\n    feed_url: \"https://www.blognone.com/rss.xml\",\n    favicon: \"https://www.blognone.com/favicon.ico\",\n    language: \"th-TH\",\n    description: \"ข่าวเทคโนโลยีจาก Blognone\",\n    items: [\n      {\n        id: item.json.guid || url,\n        url,\n        title,\n        content_text: contentSnippet,\n        content_html: item.json.content,\n        image: null,\n        date_published: isoDate || pubDate,\n        authors: [\n          {\n            name: creator,\n          },\n        ],\n        attachments: [],\n      }\n    ]\n  });\n}\n\n// n8n ต้องการ return เป็น array ของ item.json\nreturn cleanedItems.map(entry => ({ json: entry }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        416
+      ],
+      "id": "d121f8ff-cc31-4cb8-97ee-489bc4d3d488",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -336,
+        208
+      ],
+      "id": "1482d6f8-19c5-4ab0-bf0e-d5109766f1ab",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "content": "## Group node ข่าว\nอัพเดดข่าวผ่าน RSS feed หรือ http ได้เหมือนกัน",
+        "height": 640,
+        "width": 464,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -112,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "5dd9ce19-fec8-4742-bcca-85d9c046eb6c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Merge\nรวมข่าวทุก source เข้ามาเป็น object เดียว",
+        "height": 320,
+        "width": 256,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "fe792d38-a04d-4df5-9b30-f978b43f51d2",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## จัดการ format ข่าว\nดึงเฉพาะอันที่จำเป็นมา",
+        "height": 320,
+        "width": 192,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        608,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "6023fb83-aef9-4718-92ab-a57a7d408531",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## set node\nดึงข้อมูลเท่าที่จำเป็น",
+        "height": 320,
+        "width": 192,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        800,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "172abfca-c02e-4900-a234-97991a154152",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## sub workflow\nเป็นตัว trigger เวลาที่มี node เรียก sub workflow นี้",
+        "height": 320,
+        "width": 272
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -384,
+        112
+      ],
+      "typeVersion": 1,
+      "id": "c9f3f6bf-5dd6-4b69-b688-8dfb819cfbe9",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "clean",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OPENAI NEWS": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GOOGLE NEW (AI)": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "clean": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "OPENAI NEWS",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GOOGLE NEW (AI)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "350bdc92-1f6b-424c-a113-72be272a5f7e",
+  "meta": {
+    "instanceId": "e3af11cfd2833e45587b7f367d1709b9ca7a5f3e9ebfd03ad3f95bfe1bfc2b91"
+  },
+  "id": "a4Hcy0vTh5UOVIgo",
+  "tags": []
+}

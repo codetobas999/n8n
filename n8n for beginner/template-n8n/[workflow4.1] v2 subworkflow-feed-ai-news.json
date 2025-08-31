@@ -1,0 +1,192 @@
+{
+  "name": "[workflow4.1] v2 subworkflow-feed-ai-news",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://rss.app/feeds/v1.1/xNVg2hbY14Z7Gpva.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -448,
+        -224
+      ],
+      "id": "54e0f390-d491-4e77-b9f4-692ca2513b32",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -224
+      ],
+      "id": "c5b573cf-6257-4d05-8146-f757106c2f41",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "30e365b9-fc65-4f9f-83c1-2ec051aa865c",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "5e0d36b4-97ff-4399-bb8b-8f8ce5120118",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "1ce03490-5ef9-4500-a517-99444ff776ae",
+              "name": "content_text",
+              "value": "={{ $json.content_text }}",
+              "type": "string"
+            },
+            {
+              "id": "80b2cb04-bee3-4603-8bbf-8c48976c2b3c",
+              "name": "url",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        -224
+      ],
+      "id": "8ebf356f-d8be-43ad-ab41-5837c86bf479",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "content": "## ดึงข่าว AI\nดึงข่าวจาก rss openai แจกฟรี",
+        "height": 304,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -512,
+        -352
+      ],
+      "typeVersion": 1,
+      "id": "9006bec0-9546-4888-827e-b63e6fda6f09",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## แยกรายการข่าวออกมา \nทำให้ข่าวเป็นแต่ละรายการ แต่ละ items",
+        "height": 304,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -272,
+        -352
+      ],
+      "typeVersion": 1,
+      "id": "32c2e193-2759-4424-a2ee-7c5b9a62b4a3",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## set node\nดึงข้อมูลเฉพาะที่จำเป็นออกมา",
+        "height": 304,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        -352
+      ],
+      "typeVersion": 1,
+      "id": "eae3d0d9-c046-4257-8944-eabfe3c60219",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -672,
+        -224
+      ],
+      "id": "e0b7cfe8-c7d5-4da8-9b71-ae23dace57a9",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "content": "## sub workflow\nขอ trigger workflow อื่นมาเรียก sub workflow นี้",
+        "height": 304
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -752,
+        -352
+      ],
+      "typeVersion": 1,
+      "id": "ec8a2302-ac86-49c6-ad96-112c0a22c51c",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "03157f5c-5716-41e5-a0b2-af92de865077",
+  "meta": {
+    "instanceId": "e3af11cfd2833e45587b7f367d1709b9ca7a5f3e9ebfd03ad3f95bfe1bfc2b91"
+  },
+  "id": "mp8qvXLIlagaZjtz",
+  "tags": []
+}
