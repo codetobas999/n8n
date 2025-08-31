@@ -3,7 +3,8 @@
 โปรเจคนี้เป็นการตั้งค่า n8n พร้อมกับ PostgreSQL และ Nginx Proxy Manager สำหรับการใช้งานจริง
 
 ## ระบบที่จำเป็น
-
+- Namecheap (https://www.namecheap.com) สำหรับสมัคร Domain --> Domain : baseng.online
+- Cloundflare (https://www.cloudflare.com)  
 - Docker
 - Docker Compose
 - Git
