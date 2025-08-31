@@ -2,13 +2,13 @@
 
 โปรเจคนี้เป็นการตั้งค่า n8n พร้อมกับ PostgreSQL และ Nginx Proxy Manager สำหรับการใช้งานจริง
 ## Link
-   [n8n.baseng.online] (ttps://n8n.baseng.online)
+- [n8n.baseng.online](https://n8n.baseng.online/)
        
 
 ## ระบบที่จำเป็น
-- [nNamecheap](https://www.namecheap.com) สำหรับสมัคร Domain --> Domain : baseng.online
-- [nCloundflare](https://www.cloudflare.com)  
-- [GCP] (https://console.cloud.google.com)
+- [Namecheap](https://www.namecheap.com/) สำหรับสมัคร Domain --> Domain : baseng.online
+- [Cloundflare](https://www.cloudflare.com/)  
+- [GCP] (https://console.cloud.google.com/)
 - Docker
 - Docker Compose
 - Git
