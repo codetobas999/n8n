@@ -213,3 +213,5 @@ MIT
 
 ## Credit
 https://www.youtube.com/watch?v=NnjceEi2jME&list=WL&index=3
+
+https://puy-prachya.medium.com/command-for-installing-n8n-using-docker-compose-3607f5e354f4 //ที่ใช้งาน บน Google Cloud ได้ทำตาม Link นี้ (มีการ Set Domian และ Firewall บน Google Cloud)
