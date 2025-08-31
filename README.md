@@ -8,10 +8,11 @@
 ## ระบบที่จำเป็น
 - [Namecheap](https://www.namecheap.com/) สำหรับสมัคร Domain --> Domain : baseng.online
 - [Cloundflare](https://www.cloudflare.com/)  
-- [GCP] (https://console.cloud.google.com/)
+- [GCP](https://console.cloud.google.com/)
 - Docker
 - Docker Compose
 - Git
+- Nginx Proxy Manager
 - [ngrok](https://ngrok.com/) (สำหรับการทดสอบ webhook)
 - [Cloudflare](https://cloudflare.com/) (สำหรับ tunnel)
 
